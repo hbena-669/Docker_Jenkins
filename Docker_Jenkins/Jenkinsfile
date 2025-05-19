@@ -1,49 +1,25 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE_NAME = "monapp-dotnet"
-        DOCKERFILE_PATH = "Docker_Jenkins/Dockerfile"
-    }
-
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                // Exemple si tu as un repo Git, sinon supprime cette étape
+                // git 'https://github.com/ton-compte/ton-projet.git'
+                echo 'Pas de checkout, on fait juste un test.'
             }
         }
-
-        stage('Restore .NET') {
-            steps {
-                sh 'dotnet restore Docker_Jenkins/Docker_Jenkins.csproj'
-            }
-        }
-
         stage('Build .NET') {
             steps {
-                sh 'dotnet build --configuration Release Docker_Jenkins/Docker_Jenkins.csproj'
+                echo 'Compilation .NET'
+                sh 'dotnet --version'  // juste pour vérifier que .NET est là
+                // ici tu peux ajouter : sh 'dotnet build ton-projet.sln'
             }
         }
-
-        stage('Publish .NET') {
+        stage('Docker version') {
             steps {
-                sh 'dotnet publish -c Release -o out Docker_Jenkins/Docker_Jenkins.csproj'
+                sh 'docker --version' // vérifier que Docker CLI est dispo
             }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t ${IMAGE_NAME}:latest -f ${DOCKERFILE_PATH} .'
-            }
-        }
-    }
-
-    post {
-        success {
-            echo "Build and Docker image completed successfully."
-        }
-        failure {
-            echo "Pipeline failed."
         }
     }
 }
