@@ -1,31 +1,10 @@
 ﻿pipeline {
     agent any
-    environment {
-        IMAGE_NAME = "docker-jenkins"
-        TAG = "latest"
-    }
+
     stages {
-        stage('Checkout') {
+        stage('Build') {
             steps {
-                checkout scm
-            }
-        }
-        stage('Build .NET') {
-            steps {
-                sh 'dotnet restore'
-                sh 'dotnet build --configuration Release'
-            }
-        }
-        stage('Docker Build') {
-            steps {
-                script {
-                    dockerImage = docker.build("${IMAGE_NAME}:${TAG}")
-                }
-            }
-        }
-        stage('Docker Run') {
-            steps {
-                sh 'docker run --rm docker-jenkins:latest'
+                echo 'Hello from Jenkins!'
             }
         }
     }
