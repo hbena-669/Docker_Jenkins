@@ -6,6 +6,55 @@ pipeline {
             steps {
                 echo 'Hello Jenkins, pipeline OK'
             }
+        }pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "monapp-dotnet"
+        DOCKERFILE_PATH = "Docker_Jenkins/Dockerfile"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
         }
+
+        stage('Restore .NET') {
+            steps {
+                sh 'dotnet restore Docker_Jenkins/Docker_Jenkins.csproj'
+            }
+        }
+
+        stage('Build .NET') {
+            steps {
+                sh 'dotnet build --configuration Release Docker_Jenkins/Docker_Jenkins.csproj'
+            }
+        }
+
+        stage('Publish .NET') {
+            steps {
+                sh 'dotnet publish -c Release -o out Docker_Jenkins/Docker_Jenkins.csproj'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t ${IMAGE_NAME}:latest -f ${DOCKERFILE_PATH} .'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Build and Docker image completed successfully."
+        }
+        failure {
+            echo "Pipeline failed."
+        }
+    }
+}
+
     }
 }
