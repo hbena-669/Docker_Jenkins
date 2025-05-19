@@ -1,14 +1,6 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Test') {
-            steps {
-                echo 'Hello Jenkins, pipeline OK'
-            }
-        }pipeline {
-    agent any
-
     environment {
         IMAGE_NAME = "monapp-dotnet"
         DOCKERFILE_PATH = "Docker_Jenkins/Dockerfile"
@@ -53,8 +45,5 @@ pipeline {
         failure {
             echo "Pipeline failed."
         }
-    }
-}
-
     }
 }
