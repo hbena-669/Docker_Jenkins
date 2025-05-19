@@ -1,24 +1,33 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = "docker_jenkins_app"
+        TAG = "latest"
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Restore') {
             steps {
-                // Exemple si tu as un repo Git, sinon supprime cette étape
-                // git 'https://github.com/ton-compte/ton-projet.git'
-                echo 'Pas de checkout, on fait juste un test.'
+                sh 'dotnet restore Docker_Jenkins.sln'
             }
         }
-        stage('Build .NET') {
+
+        stage('Build') {
             steps {
-                echo 'Compilation .NET'
-                sh 'dotnet --version'  // juste pour vérifier que .NET est là
-                // ici tu peux ajouter : sh 'dotnet build ton-projet.sln'
+                sh 'dotnet build --configuration Release Docker_Jenkins.sln'
             }
         }
-        stage('Docker version') {
+
+        stage('Publish') {
             steps {
-                sh 'docker --version' // vérifier que Docker CLI est dispo
+                sh 'dotnet publish -c Release -o out Docker_Jenkins/Docker_Jenkins.csproj'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME:$TAG Docker_Jenkins'
             }
         }
     }
